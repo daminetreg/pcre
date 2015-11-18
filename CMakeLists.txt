@@ -65,17 +65,27 @@
 #            so it has been removed.
 # 2013-10-08 PH got rid of the "source" command, which is a bash-ism (use ".")
 # 2013-11-05 PH added support for PARENS_NEST_LIMIT
+# 2015-11-01 daminetreg adds support for CMake Hunter package manager
+
+CMAKE_MINIMUM_REQUIRED(VERSION 3.2.0)
+
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL "https://github.com/ruslo/hunter/archive/v0.12.26.tar.gz"
+    SHA1 "fb52c562bc5d8b48278cc2a84b0de682014adae5"
+)
 
 PROJECT(PCRE C CXX)
 
 # Increased minimum to 2.8.0 to support newer add_test features
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.0)
 
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake) # for FindReadline.cmake
+SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_LIST_DIR}/cmake") # for FindReadline.cmake
 
 # external packages
+hunter_add_package(BZip2)
 FIND_PACKAGE( BZip2 )
+hunter_add_package(ZLIB)
 FIND_PACKAGE( ZLIB )
 FIND_PACKAGE( Readline )
 FIND_PACKAGE( Editline )
@@ -764,14 +774,6 @@ IF(PCRE_BUILD_TESTS)
     TARGET_LINK_LIBRARIES(pcre_stringpiece_unittest pcrecpp)
   ENDIF(PCRE_BUILD_PCRECPP)
 
-  # exes in Debug location tested by the RunTest shell script
-  # via "make test"
-  IF(PCRE_BUILD_PCREGREP)
-    GET_TARGET_PROPERTY(PCREGREP_EXE pcregrep DEBUG_LOCATION)
-  ENDIF(PCRE_BUILD_PCREGREP)
-
-  GET_TARGET_PROPERTY(PCRETEST_EXE pcretest DEBUG_LOCATION)
-
 # =================================================
   # Write out a CTest configuration file
   #
@@ -786,7 +788,7 @@ MESSAGE(\" \")
   "#! /bin/sh
 # This is a generated file.
 srcdir=${PROJECT_SOURCE_DIR}
-pcretest=${PCRETEST_EXE}
+pcretest=$<pcretest_FILE>
 . ${PROJECT_SOURCE_DIR}/RunTest
 if test \"$?\" != \"0\"; then exit 1; fi
 # End
@@ -801,8 +803,8 @@ if test \"$?\" != \"0\"; then exit 1; fi
     "#! /bin/sh
 # This is a generated file.
 srcdir=${PROJECT_SOURCE_DIR}
-pcregrep=${PCREGREP_EXE}
-pcretest=${PCRETEST_EXE}
+pcregrep=$<pcregrep_FILE>
+pcretest=$<pcretest_FILE>
 . ${PROJECT_SOURCE_DIR}/RunGrepTest
 if test \"$?\" != \"0\"; then exit 1; fi
 # End
@@ -817,7 +819,7 @@ if test \"$?\" != \"0\"; then exit 1; fi
     # Provide environment for executing the bat file version of RunTest
     FILE(TO_NATIVE_PATH ${PROJECT_SOURCE_DIR} winsrc)
     FILE(TO_NATIVE_PATH ${PROJECT_BINARY_DIR} winbin)
-    FILE(TO_NATIVE_PATH ${PCRETEST_EXE} winexe)
+    FILE(TO_NATIVE_PATH $<pcretest_FILE> winexe)
 
     FILE(WRITE ${PROJECT_BINARY_DIR}/pcre_test.bat
     "\@REM This is a generated file.
