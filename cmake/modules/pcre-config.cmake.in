@@ -1,0 +1,26 @@
+# It can be used as :
+#  
+# find_package(pcre)
+# target_link_libraries(program pcre::pcre)
+#
+# It also defines 
+#   - ${pcre_INCLUDE_DIRS}
+#   - ${pcre_DEFINITIONS}
+#
+set(pcre_VERSION @pcre_VERSION@)
+
+@PACKAGE_INIT@
+
+set_and_check(pcre_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(pcre_LIBRARY "@PACKAGE_LIB_INSTALL_DIR@/@PACKAGE_PCRE_OUTPUT_NAME@")
+set(pcre_DEFINITIONS "@CMAKE_CXX_FLAGS@")
+check_required_components(nlohmann_json) 
+
+if (NOT TARGET "pcre::pcre")
+  add_library("pcre::pcre" INTERFACE IMPORTED)
+  set_target_properties("pcre::pcre"
+    PROPERTIES
+    IMPORTED_LOCATION "${pcre_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${pcre_INCLUDE_DIRS}"
+    INTERFACE_COMPILE_OPTIONS ${pcre_DEFINITIONS})
+endif()

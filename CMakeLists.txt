@@ -905,6 +905,31 @@ IF(MSVC AND INSTALL_MSVC_PDB)
             CONFIGURATIONS Debug)
 ENDIF(MSVC AND INSTALL_MSVC_PDB)
 
+# Install cmake package configuration
+include(CMakePackageConfigHelpers)
+set (pcre_VERSION 8.38)
+set(INCLUDE_INSTALL_DIR include/)
+set(LIB_INSTALL_DIR lib/)
+set(PCRE_OUTPUT_NAME $<TARGET_FILE:pcre>)
+
+set(DEFINITIONS "${CMAKE_CXX_FLAGS}")
+
+configure_package_config_file(
+  ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/pcre-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake
+  INSTALL_DESTINATION lib/cmake/pcre-${pcre_VERSION}
+  PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR PCRE_OUTPUT_NAME)
+
+write_basic_package_version_file(
+    ${CMAKE_CURRENT_BINARY_DIR}/pcre-config-version.cmake
+    VERSION ${pcre_VERSION}
+    COMPATIBILITY AnyNewerVersion)
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake
+    ${CMAKE_CURRENT_BINARY_DIR}/pcre-config-version.cmake
+    DESTINATION lib/cmake/pcre-${pcre_VERSION})
+
 # help, only for nice output
 IF(BUILD_SHARED_LIBS)
   SET(BUILD_STATIC_LIBS OFF)
