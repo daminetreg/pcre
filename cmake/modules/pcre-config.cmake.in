@@ -11,8 +11,9 @@ set(pcre_VERSION @pcre_VERSION@)
 
 @PACKAGE_INIT@
 
+
 set_and_check(pcre_INCLUDE_DIRS "@PACKAGE_INCLUDE_INSTALL_DIR@")
-set_and_check(pcre_LIBRARY "@PACKAGE_LIB_INSTALL_DIR@/@PACKAGE_PCRE_OUTPUT_NAME@")
+set_and_check(pcre_LIBRARY "@PACKAGE_LIB_INSTALL_DIR@/$<TARGET_FILE_NAME:pcre>")
 set(pcre_DEFINITIONS "@CMAKE_CXX_FLAGS@")
 check_required_components(nlohmann_json) 
 

@@ -871,6 +871,7 @@ INSTALL(TARGETS ${targets}
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
+
 INSTALL(FILES ${PCRE_HEADERS} ${PCREPOSIX_HEADERS} DESTINATION include)
 
 FILE(GLOB html ${PROJECT_SOURCE_DIR}/doc/html/*.html)
@@ -907,18 +908,20 @@ ENDIF(MSVC AND INSTALL_MSVC_PDB)
 
 # Install cmake package configuration
 include(CMakePackageConfigHelpers)
+
 set (pcre_VERSION 8.38)
 set(INCLUDE_INSTALL_DIR include/)
 set(LIB_INSTALL_DIR lib/)
-set(PCRE_OUTPUT_NAME $<TARGET_FILE:pcre>)
-
-set(DEFINITIONS "${CMAKE_CXX_FLAGS}")
 
 configure_package_config_file(
   ${CMAKE_CURRENT_LIST_DIR}/cmake/modules/pcre-config.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake.configured
   INSTALL_DESTINATION lib/cmake/pcre-${pcre_VERSION}
-  PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR PCRE_OUTPUT_NAME)
+  PATH_VARS INCLUDE_INSTALL_DIR LIB_INSTALL_DIR)
+
+file(GENERATE 
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake
+  INPUT ${CMAKE_CURRENT_BINARY_DIR}/pcre-config.cmake.configured)
 
 write_basic_package_version_file(
     ${CMAKE_CURRENT_BINARY_DIR}/pcre-config-version.cmake
