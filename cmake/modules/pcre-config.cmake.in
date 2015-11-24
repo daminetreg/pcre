@@ -20,6 +20,6 @@ if (NOT TARGET "pcre::pcre")
   add_library("pcre::pcre" INTERFACE IMPORTED)
   set_target_properties("pcre::pcre"
     PROPERTIES
-    IMPORTED_LOCATION "${pcre_LIBRARY}"
+    INTERFACE_LINK_LIBRARIES "${pcre_LIBRARY}"
     INTERFACE_INCLUDE_DIRECTORIES "${pcre_INCLUDE_DIRS}")
 endif()
